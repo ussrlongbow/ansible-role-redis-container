@@ -1,0 +1,25 @@
+---
+- name: "{{ redis_task_prefix }} Create data directory"
+  file:
+    path: "{{ redis_data_directory }}"
+    state: directory
+  when: redis_data_directory is defined
+- name: "{{ redis_task_prefix }} Place configuration file"
+  template:
+    src: "{{ redis_config_template }}"
+    dest: "{{ redis_config_file }}"
+  when: redis_config_template is defined and redis_config_file is defined
+- name: "{{ redis_task_prefix }} Create container"
+  docker_container:
+    name: "{{ redis_ct_name }}"
+    image: "{{ redis_ct_image }}:{{ redis_ct_version }}"
+    command: "{{ redis_ct_command }}"
+    hostname: "{{ redis_ct_hostname }}"
+    ports:
+      - "{{ redis_ct_bindhost }}:{{ redis_ct_bindport }}:{{ redis_ct_listenport }}"
+    recreate: "{{ redis_ct_recreate }}"
+    restart: "{{ redis_ct_restart }}"
+    restart_policy: "{{ redis_ct_restart_policy }}"
+    state: "{{ redis_ct_state }}"
+    memory: "{{ redis_ct_memory }}"
+    volumes: "{{ redis_mount_all }}"
