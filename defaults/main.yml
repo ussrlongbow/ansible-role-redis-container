@@ -1,2 +1,62 @@
 ---
-# defaults file for ansible-role-redis-container
+# Just a decoration for displayed task names
+redis_task_prefix: "=== REDIS CONTAINER ==="
+# Redis data directory inside container
+redis_ct_data_directory: /data
+# Redis configuration file inside container
+redis_ct_config_file: "/usr/local/etc/redis/redis.conf"
+# Redis image to use
+redis_ct_image: redis
+# Image version
+redis_ct_version: latest
+# Bind address at target host
+redis_ct_bindhost: 127.0.0.1
+# Bind port at target host
+redis_ct_bindport: 6379
+# Port Redis binds to inside container
+redis_ct_listenport: 6379
+# Container name
+redis_ct_name: redis
+# Container hostname
+redis_ct_hostname: "{{ redis_ct_name }}"
+# Force container recreation
+redis_ct_recreate: no
+# Force container restart
+redis_ct_restart: no
+# Container restart policy
+redis_ct_restart_policy: always
+# Container state
+redis_ct_state: started
+# Container memory limit
+redis_ct_memory: "0"
+# User defined CLI options passed to redis server, must be list of strings
+redis_ct_command_options: []
+# Override default image's CMD with user defined options
+redis_ct_command_default: "{{ [\"redis-server\"] + redis_ct_command_options }}"
+# Add config file to CMD if we defined it
+redis_ct_command: "{{ redis_ct_command_default + [redis_ct_config_file] if redis_config_file is defined else redis_ct_command_default }}"
+# Mount data directory if defined
+redis_mount_data: "{{ [] + [redis_data_directory + ':' + redis_ct_data_directory] if redis_data_directory is defined else [] }}"
+# Mount configuration file if defined
+redis_mount_config: "{{ [] + [redis_config_file + ':' + redis_ct_config_file + ':ro'] if redis_config_file is defined else [] }}"
+# Group all mounts:
+redis_mount_all: "{{ redis_mount_data + redis_mount_config }}"
+
+# Redis host settings
+#
+# redis_data_directory: /opt/redis-data
+# This is an optional variable, if defined, the directory at the specified 
+# path will be created at target hosts and mounted to container's volume 
+# specified in {{ redis_ct_data_directory }}.
+#
+# redis_config_template: "{{ playbook_dir }}/template/redis.conf.j2"
+# This is an optional variable, if defined, role will use this template
+# for Redis configuration file creation at target hosts.
+#
+# redis_config_file: "/etc/docker/redis.conf"
+# This is an optional variable, if defined, role will create a config
+# file at target hosts and will mount it to container's config file
+# located at {{ redis_ct_config_file }}. This variable requires 
+# variable {{ redis_config_template }} to be defined.
+
+
